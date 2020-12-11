@@ -22,7 +22,7 @@ extern "C" {
 namespace KPShowImagePluginNS {
     class KPOverlayPlugin : public KPPluginAdapter {
     public:
-        KPOverlayPlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParams params);
+        KPOverlayPlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParamsObject plugin_params_object);
         ~KPOverlayPlugin() override = default;
         void KillTask() override;
         void InitTask() override;
@@ -31,10 +31,8 @@ namespace KPShowImagePluginNS {
 };
 
 class KPVideoShowImagePlugin : public KPPluginAdapter {
-protected:
-    PluginParams params;
 public:
-    explicit KPVideoShowImagePlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParams params);
+    explicit KPVideoShowImagePlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParamsObject plugin_params_object);
     ~KPVideoShowImagePlugin() override;
     void KillTask() override;
     void InitTask() override;

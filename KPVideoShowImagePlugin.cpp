@@ -8,7 +8,9 @@
 
 #include "KPVideoShowImagePlugin.h"
 
-KPVideoShowImagePlugin::KPVideoShowImagePlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParams params) : KPPluginAdapter(identify_name, filter_name, filter_type), params(params) {
+#include <utility>
+
+KPVideoShowImagePlugin::KPVideoShowImagePlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParamsObject plugin_params_object) : KPPluginAdapter(identify_name, filter_name, filter_type, std::move(plugin_params_object)) {
     // 赋值described
     std::stringstream filter_desc_stream;
 
@@ -17,20 +19,20 @@ KPVideoShowImagePlugin::KPVideoShowImagePlugin(const std::string &identify_name,
     std::string y = "0";
 
     // 赋值
-    if (params.find("x") != params.end()) {
-        x = params["x"];
+    if (plugin_params_object.params.find("x") != plugin_params_object.params.end()) {
+        x = plugin_params_object.params["x"];
     }
-    if (params.find("y") != params.end()) {
-        y = params["y"];
+    if (plugin_params_object.params.find("y") != plugin_params_object.params.end()) {
+        y = plugin_params_object.params["y"];
     }
 
     // 参数校验
-    if (params.find("path") == params.end()) {
+    if (plugin_params_object.params.find("path") == plugin_params_object.params.end()) {
         logger->warn("插件参数不正确，缺少path参数;");
         throw KPFilterException("插件参数不正确, 缺少path参数");
     }
 
-    std::string       path = params["path"];
+    std::string       path = plugin_params_object.params["path"];
     KPlayer::FileInfo image_info(path);
     if (!image_info.Exists()) {
         logger->error("初始化插件失败，目标文件不存在; path: {}", path);
@@ -61,18 +63,18 @@ void KPVideoShowImagePlugin::Task() {
 }
 
 std::shared_ptr<KPPluginAdapter> KPVideoShowImagePlugin::GetSiblingFilter() {
-    return std::shared_ptr<KPShowImagePluginNS::KPOverlayPlugin>(new KPShowImagePluginNS::KPOverlayPlugin("kplayer", "video_plugin_show_image_ns_movie", KP_FILTER_TYPE_VIDEO, params));
+    return std::shared_ptr<KPShowImagePluginNS::KPOverlayPlugin>(new KPShowImagePluginNS::KPOverlayPlugin("kplayer", "video_plugin_show_image_ns_movie", KP_FILTER_TYPE_VIDEO, plugin_params_object));
 }
 
 KPLAYER_PLUGIN_FUNC(KPVideoShowImagePlugin) {
-    return new KPVideoShowImagePlugin("kplayer", "video_plugin_show_image", KP_FILTER_TYPE_VIDEO, std::move(params));
+    return new KPVideoShowImagePlugin("kplayer", "video_plugin_show_image", KP_FILTER_TYPE_VIDEO, std::move(plugin_params));
 }
 
-KPShowImagePluginNS::KPOverlayPlugin::KPOverlayPlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParams params) : KPPluginAdapter(identify_name, filter_name, filter_type) {
+KPShowImagePluginNS::KPOverlayPlugin::KPOverlayPlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParamsObject plugin_params) : KPPluginAdapter(identify_name, filter_name, filter_type, std::move(plugin_params)) {
     // 赋值described
     std::stringstream filter_desc_stream;
 
-    std::string path = params["path"];
+    std::string path = plugin_params_object.params["path"];
 
 
     filter_desc_stream << "filename=" << path;
