@@ -8,8 +8,6 @@
 
 #include "KPVideoShowImagePlugin.h"
 
-#include <utility>
-
 KPVideoShowImagePlugin::KPVideoShowImagePlugin(const std::string &identify_name, const std::string &filter_name, const KPFilterType &filter_type, PluginParamsObject plugin_params_object) : KPPluginAdapter(identify_name, filter_name, filter_type, std::move(plugin_params_object)) {
     // 赋值described
     std::stringstream filter_desc_stream;
