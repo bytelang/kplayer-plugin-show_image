@@ -26,14 +26,12 @@ KPVideoShowImagePlugin::KPVideoShowImagePlugin(const std::string &identify_name,
 
     // 参数校验
     if (plugin_params_object.params.find("path") == plugin_params_object.params.end()) {
-        logger->warn("插件参数不正确，缺少path参数;");
         throw KPFilterException("插件参数不正确, 缺少path参数");
     }
 
     std::string       path = plugin_params_object.params["path"];
     KPlayer::FileInfo image_info(path);
     if (!image_info.Exists()) {
-        logger->error("初始化插件失败，目标文件不存在; path: {}", path);
         throw KPFilterException("初始化插件失败，目标文件不存在");
     }
 
